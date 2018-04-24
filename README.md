@@ -2,10 +2,10 @@
 Hash Map on Kotlin
 
 Commands in console:
-insert(key, value)
-erase(key, value)
-erase_by_key(key)
-erase_by_value(value)
+insert(key, value)<br>
+erase(key, value)<br>
+erase_by_key(key)<br>
+erase_by_value(value)<br>
 get_by_key(key)
 get_by_value(value)
 clear()
