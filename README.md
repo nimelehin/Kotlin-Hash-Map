@@ -1,27 +1,26 @@
 # Kotlin-Hash-Map
-Hash Map on Kotlin
-
-Commands in console:
+Hash Map on Kotlin<br>
+<br>
+Commands in console:<br>
 insert(key, value)<br>
 erase(key, value)<br>
 erase_by_key(key)<br>
 erase_by_value(value)<br>
-get_by_key(key)
-get_by_value(value)
-clear()
-get_all()
-find_by_key(key)
-find_by_value(value)
-
-HashMap's methods:
-insert(key, value) -> Boolean
-erase(key, value)
-eraseByKey(key)
-eraseByVal(value)
-getByKey(key) -> HashMapResponse
-getByVal(value) -> HashMapResponse
-clear()
-getAll()
-findByKey(key) -> Array of HashMapResponse
-findByVal(value) -> Array of HashMapResponse
-
+get_by_key(key)<br>
+get_by_value(value)<br>
+clear()<br>
+get_all()<br>
+find_by_key(key)<br>
+find_by_value(value)<br>
+<br>
+HashMap's methods:<br>
+insert(key, value) -> Boolean<br>
+erase(key, value)<br>
+eraseByKey(key)<br>
+eraseByVal(value)<br>
+getByKey(key) -> HashMapResponse<br>
+getByVal(value) -> HashMapResponse<br>
+clear()<br>
+getAll()<br>
+findByKey(key) -> Array of HashMapResponse<br>
+findByVal(value) -> Array of HashMapResponse<br>
