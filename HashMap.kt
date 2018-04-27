@@ -1,16 +1,14 @@
 import Hash
+import HashMapClose
+import HashMapCell
+import HashMapResponse
 
-class HashMapCell(val hashesData: Array<Long>, val key: String, val data: String)
-class HashMapResponse(val success: Boolean, val key: String, val value: String, val error: String = "")
-
-class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
+class HashMap(private val hashTableSize: Int = 10000, private var useHashes: Int = 2) {
     private var zeroHashesArray: Array<Long> = arrayOf()
     private var hashFunctions: Array<Hash> = arrayOf()
-    private var hashTableKey = Array(tableSize, { HashMapCell(zeroHashesArray, "", "") })
-    private val usedCellKey = Array(tableSize, { 0 })
-    private var hashTableVal = Array(tableSize, { HashMapCell(zeroHashesArray, "", "") })
-    private val usedCellVal = Array(tableSize, { 0 })
-    private val hashTableSize = tableSize
+    private var hashTableKey = Array(hashTableSize, { HashMapCell(zeroHashesArray, "", "") })
+    private val usedCellKey = Array(hashTableSize, { 0 })
+    private val hashTableVal = HashMapClose(hashTableSize, useHashes)
     private var currentIteration = 1
     private var historyData: MutableSet<Pair<String, String>> = mutableSetOf()
 
@@ -23,8 +21,7 @@ class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
             zeroHashesArray += 0
         }
 
-        hashTableKey = Array(tableSize, { HashMapCell(zeroHashesArray, "", "") })
-        hashTableVal = Array(tableSize, { HashMapCell(zeroHashesArray, "", "") })
+        hashTableKey = Array(hashTableSize, { HashMapCell(zeroHashesArray, "", "") })
     }
 
     private fun calcHash(str: String): Array<Long> {
@@ -59,22 +56,10 @@ class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
         return (Math.abs(usedCell) != currentIteration) or (equalHashes)
     }
 
-    private fun posInsert(getBy: String, hashesData: Array<Long>): Int {
-        var hashTable = Array(0, { HashMapCell(zeroHashesArray, "", "") })
-        var usedCell = Array(0, { 0 })
-
-        if (getBy == "key") {
-            hashTable = hashTableKey
-            usedCell = usedCellKey
-        }
-        if (getBy == "val") {
-            hashTable = hashTableVal
-            usedCell = usedCellVal
-        }
-
-        var index: Int = (hashesData[0] % hashTableSize).toInt()
+    private fun posInsert(hashesData: Array<Long>): Int {
+        var index: Int = ((hashesData[0] + hashTableSize) % hashTableSize).toInt()
         val startPosition = index
-        while (! canStopSearchPositionInsert(hashTable[index], usedCell[index], hashesData)) {
+        while (! canStopSearchPositionInsert(hashTableKey[index], usedCellKey[index], hashesData)) {
             index ++
             if (index == hashTableSize) {
                 index = 0
@@ -87,22 +72,10 @@ class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
         return index
     }
 
-    private fun posGet(getBy: String, hashesData: Array<Long>): Int {
-        var hashTable = Array(0, { HashMapCell(zeroHashesArray, "", "") })
-        var usedCell = Array(0, { 0 })
-
-        if (getBy == "key") {
-            hashTable = hashTableKey
-            usedCell = usedCellKey
-        }
-        if (getBy == "val") {
-            hashTable = hashTableVal
-            usedCell = usedCellVal
-        }
-
-        var index: Int = (hashesData[0] % hashTableSize).toInt()
+    private fun posGet(hashesData: Array<Long>): Int {
+        var index: Int = ((hashesData[0] + hashTableSize) % hashTableSize).toInt()
         val startPosition = index
-        while (! canStopSearchPositionGet(hashTable[index], usedCell[index], hashesData)) {
+        while (! canStopSearchPositionGet(hashTableKey[index], usedCellKey[index], hashesData)) {
             index ++
             if (index == hashTableSize) {
                 index = 0
@@ -113,7 +86,7 @@ class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
             }
         }
 
-        if (usedCell[index] != currentIteration) {
+        if (usedCellKey[index] != currentIteration) {
             index = - 1
         }
         return index
@@ -122,7 +95,7 @@ class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
     private fun insertByKey(key: String, value: String): Boolean {
         val hashesData = calcHash(key)
 
-        val index = posInsert("key", hashesData)
+        val index = posInsert(hashesData)
 
         if (index == - 1) {
             return false
@@ -134,31 +107,17 @@ class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
         return true
     }
 
-    private fun insertByVal(key: String, value: String): Boolean {
-        val hashesData = calcHash(value)
-
-        val index = posInsert("val", hashesData)
-
-        if (index == - 1) {
-            return false
-        }
-
-        hashTableVal[index] = HashMapCell(hashesData, value, key)
-        usedCellVal[index] = currentIteration
-
-        return true
-    }
-
     fun insert(key: String, value: String): Boolean {
         eraseByKey(key)
         historyData.add(Pair(key, value))
-        return insertByVal(key, value) && insertByKey(key, value)
+        hashTableVal.insert(value, key)
+        return insertByKey(key, value)
     }
 
     fun getByKey(key: String): HashMapResponse {
         val hashesData = calcHash(key)
 
-        val index = posGet("key", hashesData)
+        val index = posGet(hashesData)
 
         if (index == - 1) {
             return HashMapResponse(false, "", "", "no such key")
@@ -167,85 +126,68 @@ class HashMap(tableSize: Int = 10000, private var useHashes: Int = 2) {
         return HashMapResponse(true, key, hashTableKey[index].data)
     }
 
-    fun getByVal(value: String): HashMapResponse {
-        val hashesData = calcHash(value)
+    fun getByVal(value: String): MutableList<HashMapResponse> {
+        val getArray = hashTableVal.get(value)
+        var resultArray = mutableListOf<HashMapResponse>()
 
-        val index = posGet("val", hashesData)
-
-        if (index == - 1) {
-            return HashMapResponse(false, "", "", "no such value")
+        for (item in getArray) {
+            resultArray.add(HashMapResponse(item.success, item.value, item.key, item.error))
         }
 
-        return HashMapResponse(true, hashTableVal[index].data, value)
+        return resultArray
     }
 
-    fun erase(key: String, value: String, keyPosInTablePred: Int = - 1, valPosInTablePred: Int = - 1) {
-        var keyPosInTable = keyPosInTablePred
-        if (keyPosInTable == - 1) {
-            val keyHashesData = calcHash(key)
-            keyPosInTable = posGet("key", keyHashesData)
+    fun erase(key: String, value: String) {
+        if (historyData.indexOf(Pair(key, value)) == -1) {
+            return
         }
-
-        var valPosInTable = valPosInTablePred
-        if (valPosInTable == - 1) {
-            val valHashesData = calcHash(value)
-            valPosInTable = posGet("val", valHashesData)
-        }
-
-        if (valPosInTable != - 1) {
-            hashTableVal[valPosInTable] = HashMapCell(zeroHashesArray, "", "")
-            usedCellVal[valPosInTable] = - currentIteration
-        }
+        val keyHashesData = calcHash(key)
+        val keyPosInTable = posGet(keyHashesData)
         if (keyPosInTable != - 1) {
             hashTableKey[keyPosInTable] = HashMapCell(zeroHashesArray, "", "")
-            usedCellKey[keyPosInTable] = - currentIteration
+            usedCellKey[keyPosInTable] = -currentIteration
         }
 
+        hashTableVal.erase(value, key)
         historyData.remove(Pair(key, value))
     }
 
     fun eraseByKey(key: String) {
         val hashesData = calcHash(key)
-
-        val keyPosInTable = posGet("key", hashesData)
-
+        val keyPosInTable = posGet(hashesData)
         if (keyPosInTable != - 1) {
-            val value = hashTableKey[keyPosInTable].data
-            erase(key, value, keyPosInTable, - 1)
+            erase(key, hashTableKey[keyPosInTable].data)
         }
     }
 
     fun eraseByVal(value: String) {
-        val hashesData = calcHash(value)
+        val respData = hashTableVal.get(value)
 
-        val valPosInTable = posGet("val", hashesData)
-
-        if (valPosInTable != - 1) {
-            val key = hashTableVal[valPosInTable].data
-            erase(key, value, - 1, valPosInTable)
+        for (item in respData) {
+            erase(item.value, item.key)
         }
     }
 
     fun clear() {
         historyData.clear()
-        currentIteration ++
+        currentIteration++
     }
 
-    fun findByKey(key: String): Array<HashMapResponse> {
-        var result = emptyArray<HashMapResponse>()
+    fun findByKey(key: String): MutableList<HashMapResponse> {
+        var result = mutableListOf<HashMapResponse>()
         for (item in historyData) {
             if (item.first.indexOf(key) != - 1) {
-                result += HashMapResponse(true, item.first, item.second)
+                result.add(HashMapResponse(true, item.first, item.second))
             }
         }
         return result
     }
 
-    fun findByVal(key: String): Array<HashMapResponse> {
-        var result = emptyArray<HashMapResponse>()
+    fun findByVal(key: String): MutableList<HashMapResponse> {
+        var result = mutableListOf<HashMapResponse>()
         for (item in historyData) {
             if (item.second.indexOf(key) != - 1) {
-                result += HashMapResponse(true, item.first, item.second)
+                result.add(HashMapResponse(true, item.first, item.second))
             }
         }
         return result

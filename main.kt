@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
         println("-----------------------------------")
         print("Choose an action: ")
         val s = readLine() !!
-        if (s == "insert") {
+        if (s == "insert" || s == "I") {
             print("Key: ")
             val key = readLine() !!
             print("Value: ")
@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
                 println("Error (maybe there is no empty place)")
             }
         }
-        if (s == "erase") {
+        if (s == "erase" || s == "E") {
             println("Erase Data (by key & value)")
             print("Key: ")
             val key = readLine() !!
@@ -31,14 +31,14 @@ fun main(args: Array<String>) {
 
             mm.erase(key, value)
         }
-        if (s == "erase_by_key") {
+        if (s == "erase_by_key" || s == "EK") {
             println("Erase Data (by key)")
             print("Key: ")
             val key = readLine() !!
 
             mm.eraseByKey(key)
         }
-        if (s == "get_by_key") {
+        if (s == "get_by_key" || s == "GK") {
             println("Get data by key")
             print("Key: ")
             val key = readLine() !!
@@ -48,29 +48,30 @@ fun main(args: Array<String>) {
 
             mm.print(respP)
 
-            //println(mm.printKeyVal(mm.getByKey(key)))
         }
-        if (s == "erase_by_value") {
+        if (s == "erase_by_value" || s == "EV") {
             println("[MESS] - Del Data (by value)")
             print("Value: ")
             val key = readLine() !!
             mm.eraseByVal(key)
         }
-        if (s == "get_by_value") {
-            println("Get data by value")
+        if (s == "get_by_value" || s == "GV") {
+            println("[MESS] - Get Data (by value)")
             print("Value: ")
             val key = readLine() !!
-
-            mm.print(mm.getByVal(key))
+            val result = mm.getByVal(key)
+            for (item in result) {
+                mm.print(item)
+            }
         }
-        if (s == "clear") {
+        if (s == "clear"  || s == "C") {
             println("Successfully cleared")
             mm.clear()
         }
-        if (s == "get_all") {
+        if (s == "get_all"  || s == "ALL") {
             mm.getAll()
         }
-        if (s == "find_by_key") {
+        if (s == "find_by_key" || s == "FK") {
             println("Find by key")
             print("Key: ")
             val key = readLine() !!
@@ -80,7 +81,7 @@ fun main(args: Array<String>) {
                 mm.print(item)
             }
         }
-        if (s == "find_by_value") {
+        if (s == "find_by_value" || s == "FV") {
             println("Find by value")
             print("Value: ")
             val key = readLine() !!
