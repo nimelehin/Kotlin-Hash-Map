@@ -2,13 +2,11 @@ import Hash
 import HashMapCell
 import HashMapResponse
 
-class HashMapClose(tableSize: Int = 10000, private var useHashes: Int = 2) {
+class HashMapClose(private var hashTableSize: Int = 10000, private var useHashes: Int = 2) {
     private var zeroHashesArray: Array<Long> = arrayOf()
     private var hashFunctions: Array<Hash> = arrayOf()
 
-    private var hashTableKey = Array(tableSize, { mutableListOf<HashMapCell>() })
-
-    private val hashTableSize = tableSize
+    private var hashTableKey = Array(hashTableSize, { mutableListOf<HashMapCell>() })
 
     init {
         val hashSettings = HashSettings()
@@ -91,6 +89,10 @@ class HashMapClose(tableSize: Int = 10000, private var useHashes: Int = 2) {
             hashTableKey[index].removeAt(item - wasDel)
             wasDel+=1
         }
+    }
+
+    fun clear(){
+        hashTableKey = Array(hashTableSize, { mutableListOf<HashMapCell>() })
     }
 
     private fun getAllIn(key: String): MutableList<HashMapResponse> {

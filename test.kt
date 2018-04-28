@@ -47,8 +47,8 @@ fun test() {
         if (type == 2) { //erase
             val key = rand(0, 100).toString()
             val value = rand(0, 100).toString()
-            //mm.erase(key, value)
-            //historyData.remove(Pair(key, value))
+            mm.erase(key, value)
+            historyData.remove(Pair(key, value))
             delled++
         }
         if (type == 3) { //Get by Key

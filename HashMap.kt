@@ -169,6 +169,7 @@ class HashMap(private val hashTableSize: Int = 10000, private var useHashes: Int
     }
 
     fun clear() {
+        hashTableVal.clear()
         historyData.clear()
         currentIteration++
     }
