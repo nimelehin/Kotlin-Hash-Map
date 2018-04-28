@@ -29,7 +29,7 @@ class HashMapClose(tableSize: Int = 10000, private var useHashes: Int = 2) {
     }
 
     private fun pos(hashesData: Array<Long>): Int {
-        return (hashesData[0] % hashTableSize).toInt()
+        return (((hashesData[0] % hashTableSize) + hashTableSize) % hashTableSize).toInt()
     }
 
     fun insert(key: String, value: String): Boolean {

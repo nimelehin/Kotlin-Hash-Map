@@ -57,10 +57,10 @@ class HashMap(private val hashTableSize: Int = 10000, private var useHashes: Int
     }
 
     private fun posInsert(hashesData: Array<Long>): Int {
-        var index: Int = ((hashesData[0] + hashTableSize) % hashTableSize).toInt()
+        var index: Int = (((hashesData[0] % hashTableSize) + hashTableSize) % hashTableSize).toInt()
         val startPosition = index
-        while (! canStopSearchPositionInsert(hashTableKey[index], usedCellKey[index], hashesData)) {
-            index ++
+        while (!canStopSearchPositionInsert(hashTableKey[index], usedCellKey[index], hashesData)) {
+            index++
             if (index == hashTableSize) {
                 index = 0
             }
@@ -73,10 +73,10 @@ class HashMap(private val hashTableSize: Int = 10000, private var useHashes: Int
     }
 
     private fun posGet(hashesData: Array<Long>): Int {
-        var index: Int = ((hashesData[0] + hashTableSize) % hashTableSize).toInt()
+        var index: Int = (((hashesData[0] % hashTableSize) + hashTableSize) % hashTableSize).toInt()
         val startPosition = index
-        while (! canStopSearchPositionGet(hashTableKey[index], usedCellKey[index], hashesData)) {
-            index ++
+        while (!canStopSearchPositionGet(hashTableKey[index], usedCellKey[index], hashesData)) {
+            index++
             if (index == hashTableSize) {
                 index = 0
             }
