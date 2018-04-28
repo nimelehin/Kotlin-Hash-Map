@@ -69,7 +69,10 @@ fun main(args: Array<String>) {
             mm.clear()
         }
         if (s == "get_all"  || s == "ALL") {
-            mm.getAll()
+            var gg = mm.getAll()
+            for (item in gg){
+                println(mm.print(item))
+            }
         }
         if (s == "find_by_key" || s == "FK") {
             println("Find by key")

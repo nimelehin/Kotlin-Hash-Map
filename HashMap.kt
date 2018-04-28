@@ -194,8 +194,8 @@ class HashMap(private val hashTableSize: Int = 10000, private var useHashes: Int
         return result
     }
 
-    fun getAll() {
-        println(historyData)
+    fun getAll(): MutableSet<Pair<String, String>>{
+        return historyData
     }
 
     fun response2Pair(data: HashMapResponse): Pair<String?, String?> {
