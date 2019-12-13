@@ -1,5 +1,5 @@
 # Kotlin-Hash-Map
-Hash Map on Kotlin Lang<br>
+Hash Map in Kotlin<br>
 <br>
 Commands in console:<br>
 insert(key, value) or I(key, value)<br>
